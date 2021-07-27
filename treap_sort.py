@@ -389,10 +389,10 @@ def treap_sort(iterable: Iterable[T], /, *, key: Callable[[T], S] = None, revers
     preserves the original order when elements are equal.
     """
     if key is None and reverse:
-        return (v for v, i in reversed(Treap((v, -i if reverse else i) for i, v in enumerate(iterable)).values()))
+        return (v for v, i in reversed(Treap((v, -i) for i, v in enumerate(iterable)).values()))
     elif key is None:
-        return (v for v, i in Treap((v, -i if reverse else i) for i, v in enumerate(iterable)).values())
+        return iter(Treap(iterable).values())
     elif reverse:
-        return (v for k, i, v in reversed(Treap((key(v), -i if reverse else i, v) for i, v in enumerate(iterable)).values()))
+        return (v for k, i, v in reversed(Treap((key(v), -i, v) for i, v in enumerate(iterable)).values()))
     else:
-        return (v for k, i, v in Treap((key(v), -i if reverse else i, v) for i, v in enumerate(iterable)).values())
+        return (v for k, i, v in Treap((key(v), i, v) for i, v in enumerate(iterable)).values())

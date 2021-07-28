@@ -576,6 +576,91 @@ class Treap(Generic[T]):
         """String format of the treap as a tree."""
         return str(self.root or "")
 
+    def __add__(self: Treap[T], other: Treap[T]) -> Treap[T]:
+        """Combines two treaps, in-destructively, keeping all nodes from both treaps, and returns the new treap."""
+        return Treap(root=TreapNode.__add__(self.root.copy(), other.root.copy()))
+
+    def __iadd__(self: Treap[T], other: Treap[T]) -> Treap[T]:
+        """Combines two treaps, in-place, without editing the other treap, keeping all nodes from both treaps, and returns the new treap."""
+        self.root = TreapNode.__or__(self.root, other.root.copy())
+        return self
+
+    def __radd__(self: Treap[T], other: Treap[T]) -> Treap[T]:
+        """Combines two treaps, in-destructively, keeping all nodes from both treaps, and returns the new treap."""
+        return other + self
+
+    def __sub__(self: Treap[T], other: Treap[T]) -> Treap[T]:
+        """Returns a new treap using values from self but not from other."""
+        return Treap(root=TreapNode.__sub__(self.root.copy(), other.root))
+
+    def __isub__(self: Treap[T], other: Treap[T]) -> Treap[T]:
+        """Subtracts two treaps, in-place, using values from self but not from other."""
+        self.root = TreapNode.__sub__(self.root, other.root)
+        return self
+
+    def __rsub__(self: Treap[T], other: Treap[T]) -> Treap[T]:
+        """Returns a new treap using values from self but not from other."""
+        return other - self
+
+    def __or__(self: Treap[T], other: Treap[T]) -> Treap[T]:
+        """Combines two treaps, in-destructively, keeping unique nodes from both treaps, and returns the new treap."""
+        return Treap(root=TreapNode.__or__(self.root.copy(), other.root.copy()))
+
+    def __ior__(self: Treap[T], other: Treap[T]) -> Treap[T]:
+        """Combines two treaps, in-place, without editing the other treap, keeping unique nodes from both treaps, and returns the new treap."""
+        self.root = TreapNode.__or__(self.root, other.root.copy())
+        return self
+
+    def __ror__(self: Treap[T], other: Treap[T]) -> Treap[T]:
+        """Combines two treaps, in-destructively, keeping unique nodes from both treaps, and returns the new treap."""
+        return other | self
+
+    def __and__(self: Treap[T], other: Treap[T]) -> Treap[T]:
+        """Combines two treaps, in-destructively, keeping only nodes which appears in both treaps, and returns the new treap."""
+        return Treap(root=TreapNode.__and__(self.root.copy(), other.root.copy()))
+
+    def __iand__(self: Treap[T], other: Treap[T]) -> Treap[T]:
+        """Combines two treaps, in-place, without editing the other treap, keeping only nodes which appears in both treaps, and returns the new treap."""
+        self.root = TreapNode.__and__(self.root, other.root.copy())
+        return self
+
+    def __rand__(self: Treap[T], other: Treap[T]) -> Treap[T]:
+        """Combines two treaps, in-destructively, keeping only nodes which appears in both treaps, and returns the new treap."""
+        return other & self
+
+    def __xor__(self: Treap[T], other: Treap[T]) -> Treap[T]:
+        """Combines two treaps, in-destructively, keeping only nodes which appears in one treap, and returns the new treap."""
+        return Treap(root=TreapNode.__xor__(self.root.copy(), other.root.copy()))
+
+    def __ixor__(self: Treap[T], other: Treap[T]) -> Treap[T]:
+        """Combines two treaps, in-place, without editing the other treap, keeping only nodes which appears in one treap, and returns the new treap."""
+        self.root = TreapNode.__xor__(self.root, other.root.copy())
+        return self
+
+    def __rxor__(self: Treap[T], other: Treap[T]) -> Treap[T]:
+        """Combines two treaps, in-destructively, keeping only nodes which appears in one treap, and returns the new treap."""
+        return other ^ self
+
+    def extend(self: Treap[T], other: Treap[T]) -> Treap[T]:
+        """Combines two treaps, in-destructively, keeping all nodes from both treaps, and returns the new treap."""
+        return self + other
+
+    def difference(self: Treap[T], other: Treap[T]) -> Treap[T]:
+        """Returns a new treap using values from self but not from other."""
+        return self - other
+
+    def union(self: Treap[T], other: Treap[T]) -> Treap[T]:
+        """Combines two treaps, in-destructively, keeping unique nodes from both treaps, and returns the new treap."""
+        return self | other
+
+    def intersection(self: Treap[T], other: Treap[T]) -> Treap[T]:
+        """Combines two treaps, in-destructively, keeping only nodes which appears in both treaps, and returns the new treap."""
+        return self & other
+
+    def symmetric_difference(self: Treap[T], other: Treap[T]) -> Treap[T]:
+        """Combines two treaps, in-destructively, keeping only nodes which appears in one treap, and returns the new treap."""
+        return self ^ other
+
     def height(self: Treap[T]) -> int:
         """Returns the height of the treap."""
         return self.root.height() if self else 0

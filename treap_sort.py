@@ -275,8 +275,8 @@ class TreapNode(Generic[T]):
         return type(self)(
             self.value,
             self.priority,
-            self.left.copy() if self.left else None,
-            self.right.copy() if self.right else None,
+            self.left and self.left.copy(),
+            self.right and self.right.copy(),
         )
 
     def values(self: TreapNode[T]) -> TreapValues[T]:
@@ -336,11 +336,11 @@ class Treap(Generic[T]):
 
     def height(self: Treap[T]) -> int:
         """Returns the height of the treap."""
-        return self.root.height() if self.root else 0
+        return self.root.height() if self else 0
 
     def insert(self: Treap[T], value: T) -> None:
         """Insert a node into the treap."""
-        self.root = self.root.insert(TreapNode(value)) if self.root else TreapNode(value)
+        self.root = self.root.insert(TreapNode(value)) if self else TreapNode(value)
 
     def search(self: Treap[T], value: T) -> TreapNode[T]:
         """
@@ -348,9 +348,9 @@ class Treap(Generic[T]):
 
         Raises ValueError if the value is not present.
         """
-        if not self.root:
-            raise ValueError(f"{value} not in treap")
-        return self.root.search(value)
+        if self.root:
+            return self.root.search(value)
+        raise ValueError(f"{value} not in treap")
 
     def delete(self: Treap[T], value: T) -> None:
         """
@@ -359,19 +359,19 @@ class Treap(Generic[T]):
 
         Raises ValueError if the value is not present.
         """
-        if not self.root:
-            raise ValueError(f"{value} not in treap")
-        self.root = self.root.delete(value)
+        if self:
+            self.root = self.root.delete(value)
+        raise ValueError(f"{value} not in treap")
 
     def max_(self: Treap[T]) -> TreapNode[T]:
         """Returns the maximum node in the treap."""
-        if self.root:
+        if self:
             return self.root.max_()
         raise ValueError("empty treap has no max")
 
     def min_(self: Treap[T]) -> TreapNode[T]:
         """Returns the minimum node in the treap."""
-        if self.root:
+        if self:
             return self.root.min_()
         raise ValueError("empty treap has no min")
 

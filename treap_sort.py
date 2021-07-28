@@ -612,6 +612,10 @@ class Treap(Generic[T]):
         """Create a treap given an iterable. By default, an empty treap is used."""
         # Initialize the root.
         self.root = root
+        # It the iterable is a Treap, extend this treap using it.
+        if isinstance(iterable, Treap):
+            self += iterable
+            return
         # Loop through the iterable.
         it = iter(iterable)
         # Create a unique object to test for stopping the loop.

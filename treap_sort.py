@@ -56,7 +56,7 @@ class TreapValues(Generic[T]):
 
 
 class TreapNode(Generic[T]):
-    """Treap Node class with recursive reference to all of the children."""
+    """Treap Node class with recursive reference to all of the subtreaps."""
     value: T
     priority: float
     left: Optional[TreapNode[T]]
@@ -740,23 +740,43 @@ class Treap(Generic[T]):
         return self
 
     def extend(self: Treap[T], other: Treap[T]) -> Treap[T]:
-        """Combines two treaps, in-destructively, keeping all nodes from both treaps, and returns the new treap."""
+        """
+        Combines two treaps, in-destructively, keeping all nodes from both treaps, and returns the new treap.
+
+        Equivalent to self + other.
+        """
         return self + other
 
     def difference(self: Treap[T], other: Treap[T]) -> Treap[T]:
-        """Returns a new treap using values from self but not from other."""
+        """
+        Returns a new treap using values from self but not from other.
+
+        Equivalent to self - other.
+        """
         return self - other
 
     def union(self: Treap[T], other: Treap[T]) -> Treap[T]:
-        """Combines two treaps, in-destructively, keeping unique nodes from both treaps, and returns the new treap."""
+        """
+        Combines two treaps, in-destructively, keeping unique nodes from both treaps, and returns the new treap.
+
+        Equivalent to self | other.
+        """
         return self | other
 
     def intersection(self: Treap[T], other: Treap[T]) -> Treap[T]:
-        """Combines two treaps, in-destructively, keeping only nodes which appears in both treaps, and returns the new treap."""
+        """
+        Combines two treaps, in-destructively, keeping only nodes which appears in both treaps, and returns the new treap.
+
+        Equivalent to self & other.
+        """
         return self & other
 
     def symmetric_difference(self: Treap[T], other: Treap[T]) -> Treap[T]:
-        """Combines two treaps, in-destructively, keeping only nodes which appears in one treap, and returns the new treap."""
+        """
+        Combines two treaps, in-destructively, keeping only nodes which appears in one treap, and returns the new treap.
+
+        Equivalent to self ^ other.
+        """
         return self ^ other
 
     def height(self: Treap[T]) -> int:

@@ -289,9 +289,9 @@ class Treap(Generic[T]):
     """Treap class with reference to the root node."""
     root: Optional[TreapNode[T]]
 
-    def __init__(self: Treap[T], iterable: Iterable[T] = ()) -> None:
+    def __init__(self: Treap[T], iterable: Iterable[T] = (), /, *, root: TreapNode[T] = None) -> None:
         """Create a treap given an iterable. By default, an empty treap is used."""
-        self.root = None
+        self.root = root
         it = iter(iterable)
         stop = object()
         x = next(it, stop)

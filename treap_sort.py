@@ -199,11 +199,11 @@ class TreapNode(Generic[T]):
     def insert(self: TreapNode[T], node: TreapNode[T]) -> TreapNode[T]:
         """Insert a new node and return the root."""
         # Insert onto left if node.value is less.
-        if node.value < self.value or (node.value == self.value and random() < 0.5):
+        if node.value < self.value:
             self.left = self.left.insert(node) if self.left else node
             if self.left.priority < self.priority:
                 self = self.rotate_right()
-        # Insert onto the right if node.value is not less.
+        # Insert onto the right if node.value is greater than or equal to.
         else:
             self.right = self.right.insert(node) if self.right else node
             if self.right.priority < self.priority:

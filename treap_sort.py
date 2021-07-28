@@ -239,7 +239,7 @@ class TreapNode(Generic[T]):
 
     def __and__(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]]) -> Optional[TreapNode[T]]:
         """
-        Combines two treaps, destructively, keeping only nodes
+        Combines two treaps, destructively, keeping only unique nodes
         which appears in both treaps, and return the new treap.
         """
         # If either treap is empty, there are no shared values.
@@ -286,7 +286,7 @@ class TreapNode(Generic[T]):
 
     def __xor__(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]]) -> Optional[TreapNode[T]]:
         """
-        Combines two treaps, destructively, keeping only nodes
+        Combines two treaps, destructively, keeping only unique nodes
         which appear in only one treap, and returns the new treap.
         """
         # If either treap is empty, return the treap which is not, or None.

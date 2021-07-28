@@ -195,10 +195,11 @@ class TreapNode(Generic[T]):
             return self
         # Split and remove from the left and right subtreaps.
         left, right = self.split(other.value)
-        left = type(self).__sub__(left, other.left)
-        right = type(self).__sub__(right, other.right)
-        # Rejoin the two subtreaps.
-        return type(self).join(left, right)
+        left = left and left - other.left
+        right = right and right - other.right
+        # Rejoin the two subtreaps using the split value.
+        root = type(self)(other.value, 0.0, left, right)
+        return root.delete_node(root)
 
     def __or__(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]]) -> Optional[TreapNode[T]]:
         """

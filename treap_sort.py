@@ -283,6 +283,27 @@ class TreapNode(Generic[T]):
         """Generates all values in the treap."""
         return TreapValues(self)
 
+    def split(self: TreapNode[T], value: T) -> tuple[Optional[TreapNode[T]], Optional[TreapNode[T]]]:
+        """Split a treap along a value, destructively. Return the left and right subtreaps."""
+        # Insert the new value and force its priority to make it become the root.
+        self = self.insert(type(self)(value, 0.0))
+        # Return the left and right subtreaps.
+        return self.left, self.right
+
+    def join(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]]) -> TreapNode[T]:
+        """
+        Combines two treaps destructively. Returns the new treap.
+
+        Assumes `self.max_().value <= other.min_().value`, or one of them must be empty.
+        """
+        # If either treap is empty, return the treap which is not, or None.
+        if not self or not other:
+            return self or other
+        # Insert the new value as the root.
+        self = type(self)(self.max_().value, 0.0, self, other)
+        # Return the new treap after we delete this node.
+        return self.delete_node(self)
+
 
 class Treap(Generic[T]):
     """Treap class with reference to the root node."""

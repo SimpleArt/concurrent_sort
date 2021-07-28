@@ -8,7 +8,7 @@ from __future__ import annotations
 from typing import runtime_checkable, Generic, Iterable, Iterator, Optional, Protocol, T_contra, TypeVar, Union
 from random import random
 from concurrent.futures import ThreadPoolExecutor
-from itertools import zip_longest
+from itertools import chain, zip_longest
 
 S_contra = TypeVar("S_contra", contravariant=True)
 
@@ -38,7 +38,7 @@ T = TypeVar("T", bound=Comparable)
 
 
 class TreapValues(Generic[T]):
-    """View into the values of a treap."""
+    """View into the values of a treap. Supports multiple ways to iterator through the values."""
     root: Optional[TreapNode[T]]
 
     def __init__(self: TreapValues[T], root: Optional[TreapNode[T]]) -> None:
@@ -52,6 +52,17 @@ class TreapValues(Generic[T]):
     def __reversed__(self: TreapValues[T]) -> Iterator[T]:
         """Reversed in-order traversal over the values."""
         return (node.value for node in reversed(self.root or ()))
+
+    def bfs(self: TreapValues[T]) -> Iterator[Iterator[T]]:
+        """Generates all values in the treap using breadth-first search in a layer-by-layer approach."""
+        if not self.root:
+            return
+        for layer in self.root.bfs():
+            yield (node.value for node in layer)
+
+    def bfs_flatten(self: TreapValues[T]) -> Iterator[T]:
+        """Generates all values in the treap using breadth-first search together."""
+        return chain.from_iterable(self.bfs())
 
 
 class TreapNode(Generic[T]):
@@ -656,6 +667,21 @@ class TreapNode(Generic[T]):
         """Generates all values in the treap."""
         return TreapValues(self)
 
+    def bfs(self: Optional[TreapNode[T]]) -> Iterator[Iterator[TreapNode[T]]]:
+        """Generates all nodes in the treap using breadth-first search in a layer-by-layer approach."""
+        if not self:
+            return
+        yield iter((self,))
+        if not self.left and not self.right:
+            return
+        elif not self.left:
+            yield from self.right.bfs()
+        elif not self.right:
+            yield from self.left.bfs()
+        else:
+            for left, right in zip_longest(self.left.bfs(), self.right.bfs(), fillvalue=()):
+                yield chain(left, right)
+
     def split(self: TreapNode[T], value: T) -> tuple[Optional[TreapNode[T]], Optional[TreapNode[T]]]:
         """Split a treap along a value, destructively. Return the left and right subtreaps."""
         # Insert the new value and force its priority to make it become the root.
@@ -914,6 +940,14 @@ class Treap(Generic[T]):
     def values(self: Treap[T]) -> TreapValues[T]:
         """Generates all values in the treap."""
         return TreapValues(self.root)
+
+    def bfs(self: Treap[T]) -> Iterator[Iterator[TreapNode[T]]]:
+        """Generates all nodes in the treap using breadth-first search in a layer-by-layer approach."""
+        return self.root.bfs() if self else iter(())
+
+    def bfs_flatten(self: Treap[T]) -> Iterator[Iterator[TreapNode[T]]]:
+        """Generates all nodes in the treap using breadth-first search together."""
+        return chain.from_iterable(self.root.bfs()) if self else iter(())
 
 
 class OrderedSet(Generic[T], Treap[T]):

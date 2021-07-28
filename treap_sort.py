@@ -207,7 +207,7 @@ class TreapNode(Generic[T]):
         """
         # If either treap is empty, return the treap which is not, or None.
         if not self or not other:
-            return self or other
+            return self and self.unique() or other and other.unique()
         # If self has priority, split other.
         elif self.priority < other.priority:
             # Remove duplicates.
@@ -289,7 +289,7 @@ class TreapNode(Generic[T]):
         """
         # If either treap is empty, return the treap which is not, or None.
         if not self or not other:
-            return self or other
+            return self and self.unique() or other and other.unique()
         # If self has priority, split other.
         elif self.priority < other.priority:
             # Check for duplicates.

@@ -557,6 +557,10 @@ class TreapNode(Generic[T]):
             self.right and self.right.copy(),
         )
 
+    def nodes(self: TreapNode[T]) -> Iterator[TreapNode[T]]:
+        """Generates all nodes in the treap."""
+        return iter(self)
+
     def values(self: TreapNode[T]) -> TreapValues[T]:
         """Generates all values in the treap."""
         return TreapValues(self)
@@ -613,13 +617,13 @@ class Treap(Generic[T]):
         """Checks if a value is in the treap."""
         return value in (self.root or ())
 
-    def __iter__(self: Treap[T]) -> Iterator[TreapNode[T]]:
-        """In-order traversal over the treap."""
-        return iter(self.root or ())
+    def __iter__(self: Treap[T]) -> Iterator[T]:
+        """In-order traversal over the treap values."""
+        return iter(TreapValues(self.root))
 
-    def __reversed__(self: Treap[T]) -> Iterator[TreapNode[T]]:
+    def __reversed__(self: Treap[T]) -> Iterator[T]:
         """Reversed in-order traversal over the treap."""
-        return reversed(self.root or ())
+        return reversed(TreapValues(self.root))
 
     def __len__(self: Treap[T]) -> int:
         """Returns the number of nodes in the treap."""
@@ -627,7 +631,7 @@ class Treap(Generic[T]):
 
     def __repr__(self: Treap[T]) -> str:
         """String format of the treap as the constructor."""
-        return f"{type(self).__name__}({list(self.values())})"
+        return f"{type(self).__name__}({list(self)})"
 
     def __str__(self: Treap[T]) -> str:
         """String format of the treap as a tree."""
@@ -824,6 +828,10 @@ class Treap(Generic[T]):
         """Returns a shallow copy of the entire treap."""
         return type(self)(root=(self.root and self.root.copy()))
 
+    def nodes(self: Treap[T]) -> Iterator[TreapNode[T]]:
+        """Generates all nodes in the treap."""
+        return iter(self.root)
+
     def values(self: Treap[T]) -> TreapValues[T]:
         """Generates all values in the treap."""
         return TreapValues(self.root)
@@ -838,10 +846,10 @@ def treap_sort(iterable: Iterable[T], /, *, key: Callable[[T], S] = None, revers
     preserves the original order when elements are equal.
     """
     if key is None and reverse:
-        return (v for v, i in reversed(Treap((v, -i) for i, v in enumerate(iterable)).values()))
+        return (v for v, i in reversed(Treap((v, -i) for i, v in enumerate(iterable))))
     elif key is None:
-        return iter(Treap(iterable).values())
+        return iter(Treap(iterable))
     elif reverse:
-        return (v for k, i, v in reversed(Treap((key(v), -i, v) for i, v in enumerate(iterable)).values()))
+        return (v for k, i, v in reversed(Treap((key(v), -i, v) for i, v in enumerate(iterable))))
     else:
-        return (v for k, i, v in Treap((key(v), i, v) for i, v in enumerate(iterable)).values())
+        return (v for k, i, v in Treap((key(v), i, v) for i, v in enumerate(iterable)))

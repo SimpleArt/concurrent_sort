@@ -38,7 +38,7 @@ T = TypeVar("T", bound=Comparable)
 
 
 class TreapValues(Generic[T]):
-    """View into the values of a treap. Supports multiple ways to iterator through the values."""
+    """View into the values of a treap. Supports multiple ways to iterate through the values."""
     root: Optional[TreapNode[T]]
 
     def __init__(self: TreapValues[T], root: Optional[TreapNode[T]]) -> None:
@@ -63,6 +63,10 @@ class TreapValues(Generic[T]):
     def bfs_flatten(self: TreapValues[T]) -> Iterator[T]:
         """Generates all values in the treap using breadth-first search together."""
         return chain.from_iterable(self.bfs())
+
+    def walk(self: TreapValues[T], value: T) -> Iterator[T]:
+        """Generates all values seen while walking towards a value, including the value if it is found, but not None."""
+        return (node.value for node in self.root.walk(value)) if self.root else iter(())
 
 
 class TreapNode(Generic[T]):
@@ -538,6 +542,20 @@ class TreapNode(Generic[T]):
         # value not found.
         raise ValueError(f"{value} not in treap")
 
+    def walk(self: Optional[TreapNode[T]], value: T) -> Iterator[TreapNode[T]]:
+        """Generates all nodes seen while walking towards a value, including the node with that value, except for None."""
+        while self is not None:
+            yield self
+            # value is found.
+            if value == self.value:
+                return
+            # value is on the left.
+            elif value < self.value:
+                self = self.left
+            # value is on the right.
+            else:
+                self = self.right
+
     def delete(self: TreapNode[T], value: T) -> Optional[TreapNode[T]]:
         """
         Deletes the first occurrence of a node with the given value.
@@ -905,6 +923,10 @@ class Treap(Generic[T]):
         if self:
             return self.root.search(value)
         raise ValueError(f"{value} not in treap")
+
+    def walk(self: Treap[T], value: T) -> Iterator[TreapNode[T]]:
+        """Generates all nodes seen while walking towards a value, including the node with that value, except for None."""
+        return self.root.walk() if self else iter(())
 
     def delete(self: Treap[T], value: T) -> None:
         """

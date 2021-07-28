@@ -633,6 +633,30 @@ class Treap(Generic[T]):
         """String format of the treap as a tree."""
         return str(self.root or "")
 
+    def __lt__(self: Treap[T], other: Treap[T]) -> bool:
+        """Returns if self is contained other but has different unique elements."""
+        return TreapNode.__lt__(self.root, other.root)
+
+    def __le__(self: Treap[T], other: Treap[T]) -> bool:
+        """Returns if self is contained by other."""
+        return TreapNode.__le__(self.root, other.root)
+
+    def __eq__(self: Treap[T], other: Treap[T]) -> bool:
+        """Returns if two treaps have all same values."""
+        return TreapNode.__eq__(self.root, other.root)
+
+    def __ne__(self: Treap[T], other: Treap[T]) -> bool:
+        """Returns if two treaps have any different values."""
+        return TreapNode.__ne__(self.root, other.root)
+
+    def __gt__(self: Treap[T], other: Treap[T]) -> bool:
+        """Returns if self contains other but has different unique elements."""
+        return TreapNode.__gt__(self.root, other.root)
+
+    def __ge__(self: Treap[T], other: Treap[T]) -> bool:
+        """Returns if self contains other."""
+        return TreapNode.__ge__(self.root, other.root)
+
     def __add__(self: Treap[T], other: Treap[T]) -> Treap[T]:
         """Combines two treaps, in-destructively, keeping all nodes from both treaps, and returns the new treap."""
         return Treap(root=TreapNode.__add__(self.root.copy(), other.root.copy()))
@@ -697,6 +721,23 @@ class Treap(Generic[T]):
     def __rxor__(self: Treap[T], other: Treap[T]) -> Treap[T]:
         """Combines two treaps, in-destructively, keeping only nodes which appears in one treap, and returns the new treap."""
         return other ^ self
+
+    def issubset(self: Treap[T], other: Treap[T]) -> bool:
+        """Returns if self is a subset of other. Equivalent to self <= other."""
+        return self <= other
+
+    def issuperset(self: Treap[T], other: Treap[T]) -> bool:
+        """Returns if self is a superset of other. Equivalent to self >= other."""
+        return self >= other
+
+    def isdisjoint(self: Treap[T], other: Treap[T]) -> bool:
+        """Returns if self and other share no values."""
+        return not self or not other or self.root.isdisjoint(other.root)
+
+    def unique(self: Treap[T]) -> Treap[T]:
+        """Deletes all duplicate occurrences of any value."""
+        self.root = self.root and self.root.unique()
+        return self
 
     def extend(self: Treap[T], other: Treap[T]) -> Treap[T]:
         """Combines two treaps, in-destructively, keeping all nodes from both treaps, and returns the new treap."""

@@ -262,6 +262,77 @@ class TreapNode(Generic[T]):
         # Return the root.
         return self
 
+    def delete_all(self: TreapNode[T], value: T) -> Optional[TreapNode[T]]:
+        """Deletes all occurrences of the value in the treap."""
+        while value in (self or ()):
+            self = self.delete(value)
+        return self
+
+    def delete_all_except(self: TreapNode[T], value: T) -> TreapNode[T]:
+        """Deletes all but one occurrences of the value in the treap."""
+        try:
+            first = self.search(value)
+        except ValueError:
+            return self
+        if first.left:
+            first.left = first.left.delete_all(value)
+        if first.right:
+            first.right = first.right.delete_all(value)
+        return self
+
+    def delete_node(self: TreapNode[T], node: TreapNode[T]) -> TreapNode[T]:
+        """
+        Deletes the provided node, replacing `==` with `is`.
+        Returns the new root.
+
+        Raises ValueError if the node is not present.
+        """
+        # Node not found.
+        if not self.left and node.value < self.value or not self.right and node.value > self.value:
+            raise ValueError("node not in treap")
+        # Node is on the left.
+        elif node.value < self.value:
+            self.left = self.left.delete_node(node)
+        # Node is on the right.
+        elif node.value > self.value:
+            self.right = self.right.delete_node(node)
+        # Node is not found, but the value is equal.
+        elif node is not self:
+            # Check each side.
+            if self.left and node.value == self.left.value:
+                try:
+                    self.left = self.left.delete_node(node)
+                except ValueError:
+                    pass
+                else:
+                    return self
+            if self.right and node.value == self.right.value:
+                try:
+                    self.right = self.right.delete_node(node)
+                except ValueError:
+                    pass
+                else:
+                    return self
+            # Node still not found.
+            raise ValueError("node not in treap")
+        # Node is found.
+        # Nothing on the left, replace by the right.
+        elif not self.left:
+            self = self.right
+        # Nothing on the right, replace by the left.
+        elif not self.right:
+            self = self.left
+        # Should be replaced by the left.
+        elif self.left.priority < self.right.priority:
+            self = self.rotate_right()
+            self.right = self.right.delete_node(node)
+        # Should be replaced by the right.
+        else:
+            self = self.rotate_left()
+            self.left = self.left.delete_node(node)
+        # Return the root.
+        return self
+
     def max_(self: TreapNode[T]) -> TreapNode[T]:
         """Returns the maximum node in the treap."""
         return next(reversed(self))

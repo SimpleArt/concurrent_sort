@@ -145,6 +145,18 @@ class TreapNode(Generic[T]):
             in zip(left_str, right_str)
         ])
 
+    def __add__(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]]) -> Optional[TreapNode[T]]:
+        """Combines two treaps, destructively, keeping all nodes from both treaps, and returns the new treap."""
+        # If either treap is empty, return the treap which is not, or None.
+        if not self or not other:
+            return self or other
+        elif self.priority < other.priority:
+            left, right = other.split(self.value)
+            return type(self)(self.value, self.priority, type(self).__add__(self.left, left), type(self).__add__(self.right, right))
+        else:
+            left, right = self.split(other.value)
+            return type(self)(other.value, other.priority, type(self).__add__(left, other.left), type(self).__add__(right, other.right))
+
     def height(self: TreapNode[T]) -> int:
         """Returns the height of the treap."""
         return 1 + max(

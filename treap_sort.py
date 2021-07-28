@@ -798,7 +798,7 @@ class Treap(Generic[T]):
 
         Raises ValueError if the value is not present.
         """
-        if self.root:
+        if self:
             return self.root.search(value)
         raise ValueError(f"{value} not in treap")
 

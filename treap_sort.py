@@ -680,16 +680,16 @@ class Treap(Generic[T]):
 
     def __add__(self: Treap[T], other: Treap[T]) -> Treap[T]:
         """Combines two treaps, in-destructively, keeping all nodes from both treaps, and returns the new treap."""
-        return type(self)(root=TreapNode.__add__(self.root.copy(), other.root.copy()))
+        return type(self)(root=TreapNode.__add__(self.copy().root, other.copy().root))
 
     def __iadd__(self: Treap[T], other: Treap[T]) -> Treap[T]:
         """Combines two treaps, in-place, without editing the other treap, keeping all nodes from both treaps, and returns the new treap."""
-        self.root = TreapNode.__add__(self.root, other.root.copy())
+        self.root = TreapNode.__add__(self.root, other.copy().root)
         return self
 
     def __sub__(self: Treap[T], other: Treap[T]) -> Treap[T]:
         """Returns a new treap using values from self but not from other."""
-        return type(self)(root=TreapNode.__sub__(self.root.copy(), other.root))
+        return type(self)(root=TreapNode.__sub__(self.copy().root, other.root))
 
     def __isub__(self: Treap[T], other: Treap[T]) -> Treap[T]:
         """Subtracts two treaps, in-place, using values from self but not from other."""
@@ -698,29 +698,29 @@ class Treap(Generic[T]):
 
     def __or__(self: Treap[T], other: Treap[T]) -> Treap[T]:
         """Combines two treaps, in-destructively, keeping unique nodes from both treaps, and returns the new treap."""
-        return type(self)(root=TreapNode.__or__(self.root.copy(), other.root.copy()))
+        return type(self)(root=TreapNode.__or__(self.copy().root, other.copy().root))
 
     def __ior__(self: Treap[T], other: Treap[T]) -> Treap[T]:
         """Combines two treaps, in-place, without editing the other treap, keeping unique nodes from both treaps, and returns the new treap."""
-        self.root = TreapNode.__or__(self.root, other.root.copy())
+        self.root = TreapNode.__or__(self.root, other.copy().root)
         return self
 
     def __and__(self: Treap[T], other: Treap[T]) -> Treap[T]:
         """Combines two treaps, in-destructively, keeping only nodes which appears in both treaps, and returns the new treap."""
-        return type(self)(root=TreapNode.__and__(self.root.copy(), other.root.copy()))
+        return type(self)(root=TreapNode.__and__(self.copy().root, other.copy().root))
 
     def __iand__(self: Treap[T], other: Treap[T]) -> Treap[T]:
         """Combines two treaps, in-place, without editing the other treap, keeping only nodes which appears in both treaps, and returns the new treap."""
-        self.root = TreapNode.__and__(self.root, other.root.copy())
+        self.root = TreapNode.__and__(self.root, other.copy().root)
         return self
 
     def __xor__(self: Treap[T], other: Treap[T]) -> Treap[T]:
         """Combines two treaps, in-destructively, keeping only nodes which appears in one treap, and returns the new treap."""
-        return type(self)(root=TreapNode.__xor__(self.root.copy(), other.root.copy()))
+        return type(self)(root=TreapNode.__xor__(self.copy().root, other.copy().root))
 
     def __ixor__(self: Treap[T], other: Treap[T]) -> Treap[T]:
         """Combines two treaps, in-place, without editing the other treap, keeping only nodes which appears in one treap, and returns the new treap."""
-        self.root = TreapNode.__xor__(self.root, other.root.copy())
+        self.root = TreapNode.__xor__(self.root, other.copy().root)
         return self
 
     def issubset(self: Treap[T], other: Treap[T]) -> bool:

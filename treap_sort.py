@@ -377,7 +377,7 @@ class Treap(Generic[T]):
 
     def copy(self: TreapNode[T]) -> TreapNode[T]:
         """Returns a shallow copy of the entire treap."""
-        return type(self)(self.values())
+        return type(self)(root=(self.root and self.root.copy()))
 
     def values(self: TreapNode[T]) -> Iterator[T]:
         """Generates all values in the treap."""

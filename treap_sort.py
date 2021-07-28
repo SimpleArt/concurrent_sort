@@ -820,11 +820,11 @@ class Treap(Generic[T]):
             return self.root.min_()
         raise ValueError("empty treap has no min")
 
-    def copy(self: TreapNode[T]) -> TreapNode[T]:
+    def copy(self: Treap[T]) -> Treap[T]:
         """Returns a shallow copy of the entire treap."""
         return type(self)(root=(self.root and self.root.copy()))
 
-    def values(self: TreapNode[T]) -> Iterator[T]:
+    def values(self: Treap[T]) -> TreapValues[T]:
         """Generates all values in the treap."""
         return TreapValues(self.root)
 

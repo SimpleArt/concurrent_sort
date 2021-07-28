@@ -209,6 +209,53 @@ class TreapNode(Generic[T]):
             # Create a new root using the combined left and right sides of the root.
             return type(self)(other.value, other.priority, type(self).__or__(left, other.left), type(self).__or__(right, other.right))
 
+    def __and__(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]]) -> Optional[TreapNode[T]]:
+        """
+        Combines two treaps, destructively, keeping only nodes
+        which appears in both treaps, and return the new treap.
+        """
+        # If either treap is empty, there are no shared values.
+        if not self or not other:
+            return None
+        # If self has priority, split other.
+        elif self.priority < other.priority:
+            # Check for duplicates.
+            in_both = self.value in other
+            # Remove duplicates.
+            self = self.delete_all_except(self.value)
+            if in_both:
+                other = other.delete_all(self.value)
+            # Nothing to split, done.
+            if not other:
+                return self
+            # Split and join the subtreaps.
+            left, right = other.split(self.value)
+            self.left = type(self).__and__(self.left, left)
+            self.right = type(self).__and__(self.right, right)
+            # Remove non-duplicates.
+            if not in_both:
+                self = self.delete(self.value)
+            return self
+        # If other has priority, split self.
+        else:
+            # Check for duplicates.
+            in_both = other.value in self
+            # Remove duplicates.
+            other = other.delete_all_except(other.value)
+            if in_both:
+                self = self.delete_all(other.value)
+            # Nothing to split, done.
+            if not self:
+                return other
+            # Split and join the subtreaps.
+            left, right = self.split(other.value)
+            other.left = type(self).__and__(left, other.left)
+            other.right = type(self).__and__(right, other.right)
+            # Remove non-duplicates.
+            if not in_both:
+                other = other.delete(other.value)
+            return other
+
     def height(self: TreapNode[T]) -> int:
         """Returns the height of the treap."""
         return 1 + max(

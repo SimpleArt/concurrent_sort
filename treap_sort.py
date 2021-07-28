@@ -8,6 +8,7 @@ from __future__ import annotations
 from typing import runtime_checkable, Generic, Iterable, Iterator, Optional, Protocol, T_contra, TypeVar, Union
 from random import random
 from concurrent.futures import ThreadPoolExecutor
+from itertools import zip_longest
 
 S_contra = TypeVar("S", contravariant=True)
 
@@ -144,6 +145,32 @@ class TreapNode(Generic[T]):
             for left_line, right_line
             in zip(left_str, right_str)
         ])
+
+    def __lt__(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]]) -> bool:
+        """Returns if self is contained by other but has different unique elements."""
+        return self.copy().unique() != other.copy().unique() and self <= other
+
+    def __le__(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]]) -> bool:
+        """Returns if self is contained by other."""
+        return not (self.copy() - other)
+
+    def __eq__(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]]) -> bool:
+        """Returns if two treaps have the same values."""
+        # Check in-order traversal over values.
+        return all(s == o for s, o in zip_longest((self or {}).values(), (other or {}).values(), fillvalue=object()))
+
+    def __ne__(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]]) -> bool:
+        """Returns if two treaps have any different values."""
+        # Check in-order traversal over values.
+        return any(s != o for s, o in zip_longest((self or {}).values(), (other or {}).values(), fillvalue=object()))
+
+    def __gt__(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]]) -> bool:
+        """Returns if self contains other but has different unique elements."""
+        return self.copy().unique() != other.copy().unique() and self >= other
+
+    def __ge__(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]]) -> bool:
+        """Returns if self contains other."""
+        return not (other.copy() - self)
 
     def __add__(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]]) -> Optional[TreapNode[T]]:
         """Combines two treaps, destructively, keeping all nodes from both treaps, and returns the new treap."""
@@ -294,6 +321,36 @@ class TreapNode(Generic[T]):
             other.right = type(self).__xor__(right, other.right)
             # Remove duplicates.
             return other.delete_all(other.value) if in_both else other.delete_all_except(other.value)
+
+    def issubset(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]]) -> bool:
+        """Returns if self is a subset of other."""
+        return self is None or self <= other
+
+    def issuperset(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]]) -> bool:
+        """Returns if self is a superset of other."""
+        return other is None or other <= self
+
+    def isdisjoint(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]]) -> bool:
+        """Returns if self and other share no values."""
+        # Emptry treaps are disjoint.
+        if not self or not other:
+            return True
+        # Randomly choose which root to use.
+        if random() < 0.5:
+            self, other = other, self
+        # They share a value.
+        if self.value in other:
+            return False
+        # Split and compare subtreaps.
+        left, right = other.split(self.value)
+        return type(self).isdisjoint(self.left, left) and type(self).isdisjoint(self.right, right)
+
+    def unique(self: TreapNode[T]) -> TreapNode[T]:
+        """Deletes all duplicate occurrences of any value."""
+        self = self.delete_all_except(self.value)
+        self.left = self.left and self.left.unique()
+        self.right = self.right and self.right.unique()
+        return self
 
     def height(self: TreapNode[T]) -> int:
         """Returns the height of the treap."""

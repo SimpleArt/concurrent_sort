@@ -291,10 +291,15 @@ class Treap(Generic[T]):
 
     def __init__(self: Treap[T], iterable: Iterable[T] = (), /, *, root: TreapNode[T] = None) -> None:
         """Create a treap given an iterable. By default, an empty treap is used."""
+        # Initialize the root.
         self.root = root
+        # Loop through the iterable.
         it = iter(iterable)
+        # Create a unique object to test for stopping the loop.
         stop = object()
+        # Get the first value.
         x = next(it, stop)
+        # Get the next value and insert the previous value into the treap concurrently.
         with ThreadPoolExecutor(max_workers=2) as executor:
             while x is not stop:
                 f_insert = executor.submit(self.insert, x)

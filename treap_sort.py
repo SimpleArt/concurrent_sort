@@ -666,7 +666,7 @@ class Treap(Generic[T]):
 
     def __iadd__(self: Treap[T], other: Treap[T]) -> Treap[T]:
         """Combines two treaps, in-place, without editing the other treap, keeping all nodes from both treaps, and returns the new treap."""
-        self.root = TreapNode.__or__(self.root, other.root.copy())
+        self.root = TreapNode.__add__(self.root, other.root.copy())
         return self
 
     def __radd__(self: Treap[T], other: Treap[T]) -> Treap[T]:

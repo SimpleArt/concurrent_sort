@@ -229,11 +229,10 @@ class TreapNode(Generic[T]):
         # value not found.
         raise ValueError(f"{value} not in treap")
 
-    def delete(self: TreapNode[T], value: T) -> TreapNode[T]:
+    def delete(self: TreapNode[T], value: T) -> Optional[TreapNode[T]]:
         """
         Deletes the first occurrence of a node with the given value.
         Returns the new root.
-
         Raises ValueError if the value is not present.
         """
         # Node not found.
@@ -257,7 +256,7 @@ class TreapNode(Generic[T]):
             self = self.rotate_right()
             self.right = self.right.delete(value)
         # Should be replaced by the right.
-        elif self.left.priority < self.right.priority:
+        else:
             self = self.rotate_left()
             self.left = self.left.delete(value)
         # Return the root.

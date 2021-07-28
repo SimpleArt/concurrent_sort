@@ -402,16 +402,16 @@ class TreapNode(Generic[T]):
         self.left = Y
         return L
 
-    def insert(self: TreapNode[T], node: TreapNode[T]) -> TreapNode[T]:
-        """Insert a new node and return the root."""
-        # Insert onto left if node.value is less.
-        if node.value < self.value:
-            self.left = self.left.insert(node) if self.left else node
+    def insert(self: TreapNode[T], value: T, *args, **kwargs) -> TreapNode[T]:
+        """Insert a new value and return the root."""
+        # Insert onto left if the value is less.
+        if value < self.value:
+            self.left = self.left.insert(value, *args, **kwargs) if self.left else type(self)(value, *args, **kwargs)
             if self.left.priority < self.priority:
                 self = self.rotate_right()
-        # Insert onto the right if node.value is greater than or equal to.
+        # Insert onto the right if the value is greater than or equal to (for stable sorting).
         else:
-            self.right = self.right.insert(node) if self.right else node
+            self.right = self.right.insert(value, *args, **kwargs) if self.right else type(self)(value, *args, **kwargs)
             if self.right.priority < self.priority:
                 self = self.rotate_left()
         # Return the new root.
@@ -567,7 +567,7 @@ class TreapNode(Generic[T]):
     def split(self: TreapNode[T], value: T) -> tuple[Optional[TreapNode[T]], Optional[TreapNode[T]]]:
         """Split a treap along a value, destructively. Return the left and right subtreaps."""
         # Insert the new value and force its priority to make it become the root.
-        self = self.insert(type(self)(value, 0.0))
+        self = self.insert(value, 0.0)
         # Return the left and right subtreaps.
         return self.left, self.right
 
@@ -786,9 +786,9 @@ class Treap(Generic[T]):
         """Returns the height of the treap."""
         return self.root.height() if self else 0
 
-    def insert(self: Treap[T], value: T) -> None:
-        """Insert a node into the treap."""
-        self.root = self.root.insert(TreapNode(value)) if self else TreapNode(value)
+    def insert(self: Treap[T], value: T, *args, **kwargs) -> None:
+        """Insert a value into the treap."""
+        self.root = self.root.insert(value, *args, **kwargs) if self else TreapNode(value, *args, **kwargs)
 
     def search(self: Treap[T], value: T) -> TreapNode[T]:
         """

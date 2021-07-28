@@ -157,6 +157,23 @@ class TreapNode(Generic[T]):
             left, right = self.split(other.value)
             return type(self)(other.value, other.priority, type(self).__add__(left, other.left), type(self).__add__(right, other.right))
 
+    def __sub__(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]]) -> Optional[TreapNode[T]]:
+        """Returns a new treap using values from self but not from other. Destructively modifies self but not other."""
+        # Nothing to remove if one of them is empty.
+        if not self or not other:
+            return self
+        # Delete other's value from self.
+        self = self.delete_all(other.value)
+        # Nothing to remove if its now empty.
+        if not self:
+            return self
+        # Split and remove from the left and right subtreaps.
+        left, right = self.split(other.value)
+        left = type(self).__sub__(left, other.left)
+        right = type(self).__sub__(right, other.right)
+        # Rejoin the two subtreaps.
+        return type(self).join(left, right)
+
     def height(self: TreapNode[T]) -> int:
         """Returns the height of the treap."""
         return 1 + max(

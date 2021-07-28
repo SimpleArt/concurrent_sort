@@ -856,6 +856,35 @@ class Treap(Generic[T]):
         return TreapValues(self.root)
 
 
+class OrderedSet(Generic[T], Treap[T]):
+    """Implementation of an ordered set using the treap data structure."""
+
+    def __add__(self: OrderedSet[T], other: OrderedSet[T]) -> OrderedSet[T]:
+        """Combines two treaps, in-destructively, keeping unique nodes from both treaps, and returns the new treap."""
+        return type(self)(root=TreapNode.__or__(self.root.copy(), other.root.copy()))
+
+    def __iadd__(self: OrderedSet[T], other: OrderedSet[T]) -> OrderedSet[T]:
+        """Combines two treaps, in-place, without editing the other treap, keeping unique nodes from both treaps, and returns the new treap."""
+        self.root = TreapNode.__or__(self.root, other.root.copy())
+        return self
+
+    def unique(self: OrderedSet[T]) -> OrderedSet[T]:
+        """Deletes all duplicate occurrences of any value. Returns self without modification."""
+        return self
+
+    def insert(self: OrderedSet[T], value: T, *args, **kwargs) -> None:
+        """Add a value into the treap if its not already in the treap. Equivalent to self.add(...)."""
+        self.root = self.root.add(value, *args, **kwargs) if self else TreapNode(value, *args, **kwargs)
+
+    def extend(self: OrderedSet[T], other: OrderedSet[T]) -> OrderedSet[T]:
+        """
+        Combines two treaps, in-destructively, keeping unique nodes from both treaps, and returns the new treap.
+
+        Equivalent to self | other.
+        """
+        return self | other
+
+
 def treap_sort(iterable: Iterable[T], /, *, key: Callable[[T], Comparable] = None, reverse: bool = False) -> Iterator[T]:
     """
     Sorts using heap sort. This allows results to be sorted as they are received.

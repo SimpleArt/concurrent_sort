@@ -174,6 +174,41 @@ class TreapNode(Generic[T]):
         # Rejoin the two subtreaps.
         return type(self).join(left, right)
 
+    def __or__(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]]) -> Optional[TreapNode[T]]:
+        """
+        Combines two treaps, destructively, keeping unique
+        nodes from both treaps, and returns the new treap.
+        """
+        # If either treap is empty, return the treap which is not, or None.
+        if not self or not other:
+            return self or other
+        # If self has priority, split other.
+        elif self.priority < other.priority:
+            # Remove duplicates.
+            self = self.delete_all_except(self.value)
+            if self.value in other:
+                other = other.delete_all(self.value)
+            # Nothing to split, done.
+            if not other:
+                return self
+            # Split along the the root value.
+            left, right = other.split(self.value)
+            # Create a new root using the combined left and right sides of the root.
+            return type(self)(self.value, self.priority, type(self).__or__(self.left, left), type(self).__or__(self.right, right))
+        # If other has priority, split self.
+        else:
+            # Remove duplicates.
+            other = other.delete_all_except(other.value)
+            if other.value in self:
+                self = self.delete_all(other.value)
+            # Nothing to split, done.
+            if not self:
+                return other
+            # Split along the the root value.
+            left, right = self.split(other.value)
+            # Create a new root using the combined left and right sides of the root.
+            return type(self)(other.value, other.priority, type(self).__or__(left, other.left), type(self).__or__(right, other.right))
+
     def height(self: TreapNode[T]) -> int:
         """Returns the height of the treap."""
         return 1 + max(

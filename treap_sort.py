@@ -256,6 +256,45 @@ class TreapNode(Generic[T]):
                 other = other.delete(other.value)
             return other
 
+    def __xor__(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]]) -> Optional[TreapNode[T]]:
+        """
+        Combines two treaps, destructively, keeping only nodes
+        which appear in only one treap, and returns the new treap.
+        """
+        # If either treap is empty, return the treap which is not, or None.
+        if not self or not other:
+            return self or other
+        # If self has priority, split other.
+        elif self.priority < other.priority:
+            # Check for duplicates.
+            in_both = self.value in other
+            # Remove duplicates.
+            other = other.delete_all(self.value)
+            # Nothing to split, done.
+            if not other:
+                return self.delete_all(self.value)
+            # Split and join the subtreaps.
+            left, right = other.split(self.value)
+            self.left = type(self).__xor__(self.left, left)
+            self.right = type(self).__xor__(self.right, right)
+            # Remove duplicates.
+            return self.delete_all(self.value) if in_both else self.delete_all_except(self.value)
+        # If other has priority, split self.
+        else:
+            # Check for duplicates.
+            in_both = other.value in self
+            # Remove duplicates.
+            self = self.delete_all(other.value)
+            # Nothing to split, done.
+            if not self:
+                return other.delete_all(other.value)
+            # Split and join the subtreaps.
+            left, right = self.split(other.value)
+            other.left = type(self).__xor__(left, other.left)
+            other.right = type(self).__xor__(right, other.right)
+            # Remove duplicates.
+            return other.delete_all(other.value) if in_both else other.delete_all_except(other.value)
+
     def height(self: TreapNode[T]) -> int:
         """Returns the height of the treap."""
         return 1 + max(

@@ -10,7 +10,7 @@ from random import random
 from concurrent.futures import ThreadPoolExecutor
 from itertools import zip_longest
 
-S_contra = TypeVar("S", contravariant=True)
+S_contra = TypeVar("S_contra", contravariant=True)
 
 @runtime_checkable
 class LessThan(Protocol[S_contra, T_contra]):
@@ -34,7 +34,6 @@ class GreaterEqual(Protocol[S_contra, T_contra]):
 
 Comparable = Union[LessThan, GreaterThan, LessEqual, GreaterEqual]
 
-S = TypeVar("S", bound=Comparable)
 T = TypeVar("T", bound=Comparable)
 
 
@@ -837,7 +836,7 @@ class Treap(Generic[T]):
         return TreapValues(self.root)
 
 
-def treap_sort(iterable: Iterable[T], /, *, key: Callable[[T], S] = None, reverse: bool = False) -> Iterator[T]:
+def treap_sort(iterable: Iterable[T], /, *, key: Callable[[T], Comparable] = None, reverse: bool = False) -> Iterator[T]:
     """
     Sorts using heap sort. This allows results to be sorted as they are received.
     This is useful if iterating through is slow so the results may be sorted while waiting.

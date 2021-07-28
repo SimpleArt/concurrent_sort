@@ -402,6 +402,22 @@ class TreapNode(Generic[T]):
         self.left = Y
         return L
 
+    def add(self: TreapNode[T], value: T, *args, **kwargs) -> TreapNode[T]:
+        """Add a new value if its not already in the treap and return the root."""
+        # Insert onto left if the value is less.
+        if value < self.value:
+            self.left = self.left.add(value, *args, **kwargs) if self.left else type(self)(value, *args, **kwargs)
+            if self.left.priority < self.priority:
+                self = self.rotate_right()
+        # Insert onto the right if the value is greater.
+        elif value > self.value:
+            self.right = self.right.add(value, *args, **kwargs) if self.right else type(self)(value, *args, **kwargs)
+            if self.right.priority < self.priority:
+                self = self.rotate_left()
+        # Do nothing if value == self.value.
+        # Return the new root.
+        return self
+
     def insert(self: TreapNode[T], value: T, *args, **kwargs) -> TreapNode[T]:
         """Insert a new value and return the root."""
         # Insert onto left if the value is less.
@@ -785,6 +801,10 @@ class Treap(Generic[T]):
     def height(self: Treap[T]) -> int:
         """Returns the height of the treap."""
         return self.root.height() if self else 0
+
+    def add(self: Treap[T], value: T, *args, **kwargs) -> None:
+        """Add a value into the treap if its not already in the treap."""
+        self.root = self.root.add(value, *args, **kwargs) if self else TreapNode(value, *args, **kwargs)
 
     def insert(self: Treap[T], value: T, *args, **kwargs) -> None:
         """Insert a value into the treap."""

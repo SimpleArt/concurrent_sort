@@ -926,7 +926,7 @@ class Treap(Generic[T]):
 
     def walk(self: Treap[T], value: T) -> Iterator[TreapNode[T]]:
         """Generates all nodes seen while walking towards a value, including the node with that value, except for None."""
-        return self.root.walk() if self else iter(())
+        return self.root.walk(value) if self else iter(())
 
     def delete(self: Treap[T], value: T) -> None:
         """

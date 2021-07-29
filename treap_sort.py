@@ -421,19 +421,16 @@ class TreapNode(Generic[T]):
         return other is None or other <= self
 
     def isdisjoint(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]]) -> bool:
-        """Returns if self and other share no values."""
+        """Returns if self and other share no values. Destructively edits self but not other."""
         # Emptry treaps are disjoint.
         if not self or not other:
             return True
-        # Randomly choose which root to use.
-        if random() < 0.5:
-            self, other = other, self
         # They share a value.
-        if self.value in other:
+        if other.value in self:
             return False
         # Split and compare subtreaps.
-        left, right = other.split(self.value)
-        return type(self).isdisjoint(self.left, left) and type(self).isdisjoint(self.right, right)
+        left, right = self.split(other.value)
+        return type(self).isdisjoint(left, other.left) and type(self).isdisjoint(right, other.right)
 
     def unique(self: TreapNode[T]) -> TreapNode[T]:
         """Deletes all duplicate occurrences of any value."""

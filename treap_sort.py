@@ -205,12 +205,12 @@ class TreapNode(Generic[T]):
     def __eq__(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]]) -> bool:
         """Returns if two treaps have the same values."""
         # Check in-order traversal over values.
-        return all(s == o for s, o in zip_longest((self or {}).values(), (other or {}).values(), fillvalue=object()))
+        return all(s == o for s, o in zip_longest(TreapValues(self), TreapValues(other), fillvalue=object()))
 
     def __ne__(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]]) -> bool:
         """Returns if two treaps have any different values."""
         # Check in-order traversal over values.
-        return any(s != o for s, o in zip_longest((self or {}).values(), (other or {}).values(), fillvalue=object()))
+        return any(s != o for s, o in zip_longest(TreapValues(self), TreapValues(other), fillvalue=object()))
 
     def __gt__(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]]) -> bool:
         """Returns if self contains other but has different unique elements."""

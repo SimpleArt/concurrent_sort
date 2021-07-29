@@ -217,13 +217,17 @@ class TreapNode(Generic[T]):
         root = type(self)(other.value, 0.0, left, right)
         return root.delete_node(root)
 
-    def __or__(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]]) -> Optional[TreapNode[T]]:
+    def __or__(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]], set_mode: bool = False) -> Optional[TreapNode[T]]:
         """
         Combines two treaps, destructively, keeping unique
         nodes from both treaps, and returns the new treap.
+
+        If set_mode = True, then it is assumed that both treaps contain unique nodes.
         """
         # If either treap is empty, return the treap which is not, or None.
         if not self or not other:
+            if set_mode:
+                return self or other
             return self and self.unique() or other and other.unique()
         # If self has priority, split other.
         elif self.priority < other.priority:
@@ -237,7 +241,7 @@ class TreapNode(Generic[T]):
             # Split along the the root value.
             left, right = other.split(self.value)
             # Create a new root using the combined left and right sides of the root.
-            return type(self)(self.value, self.priority, type(self).__or__(self.left, left), type(self).__or__(self.right, right))
+            return type(self)(self.value, self.priority, type(self).__or__(self.left, left, set_mode), type(self).__or__(self.right, right, set_mode))
         # If other has priority, split self.
         else:
             # Remove duplicates.
@@ -250,42 +254,7 @@ class TreapNode(Generic[T]):
             # Split along the the root value.
             left, right = self.split(other.value)
             # Create a new root using the combined left and right sides of the root.
-            return type(self)(other.value, other.priority, type(self).__or__(left, other.left), type(self).__or__(right, other.right))
-
-    def __set_or__(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]]) -> Optional[TreapNode[T]]:
-        """
-        Combines two treaps, destructively, assuming unique
-        nodes from both treaps, and returns the new treap.
-        """
-        # If either treap is empty, return the treap which is not, or None.
-        if not self or not other:
-            return self or other
-        # If self has priority, split other.
-        elif self.priority < other.priority:
-            # Remove duplicates.
-            self = self.delete_all_except(self.value)
-            if self.value in other:
-                other = other.delete_all(self.value)
-            # Nothing to split, done.
-            if not other:
-                return self
-            # Split along the the root value.
-            left, right = other.split(self.value)
-            # Create a new root using the combined left and right sides of the root.
-            return type(self)(self.value, self.priority, type(self).__set_or__(self.left, left), type(self).__set_or__(self.right, right))
-        # If other has priority, split self.
-        else:
-            # Remove duplicates.
-            other = other.delete_all_except(other.value)
-            if other.value in self:
-                self = self.delete_all(other.value)
-            # Nothing to split, done.
-            if not self:
-                return other
-            # Split along the the root value.
-            left, right = self.split(other.value)
-            # Create a new root using the combined left and right sides of the root.
-            return type(self)(other.value, other.priority, type(self).__set_or__(left, other.left), type(self).__set_or__(right, other.right))
+            return type(self)(other.value, other.priority, type(self).__or__(left, other.left, set_mode), type(self).__or__(right, other.right, set_mode))
 
     def __and__(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]]) -> Optional[TreapNode[T]]:
         """
@@ -334,13 +303,17 @@ class TreapNode(Generic[T]):
                 other = other.delete(other.value)
             return other
 
-    def __xor__(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]]) -> Optional[TreapNode[T]]:
+    def __xor__(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]], set_mode: bool = False) -> Optional[TreapNode[T]]:
         """
         Combines two treaps, destructively, keeping only unique nodes
         which appear in only one treap, and returns the new treap.
+
+        If set_mode = True, then it is assumed that both treaps contain unique nodes.
         """
         # If either treap is empty, return the treap which is not, or None.
         if not self or not other:
+            if set_mode:
+                return self or other
             return self and self.unique() or other and other.unique()
         # If self has priority, split other.
         elif self.priority < other.priority:
@@ -370,45 +343,6 @@ class TreapNode(Generic[T]):
             left, right = self.split(other.value)
             other.left = type(self).__xor__(left, other.left)
             other.right = type(self).__xor__(right, other.right)
-            # Remove duplicates.
-            return other.delete_all(other.value) if in_both else other.delete_all_except(other.value)
-
-    def __set_xor__(self: Optional[TreapNode[T]], other: Optional[TreapNode[T]]) -> Optional[TreapNode[T]]:
-        """
-        Combines two treaps, destructively, keeping only unique nodes which appear
-        in only one treap, assuming no duplicates, and returns the new treap.
-        """
-        # If either treap is empty, return the treap which is not, or None.
-        if not self or not other:
-            return self or other
-        # If self has priority, split other.
-        elif self.priority < other.priority:
-            # Check for duplicates.
-            in_both = self.value in other
-            # Remove duplicates.
-            other = other.delete_all(self.value)
-            # Nothing to split, done.
-            if not other:
-                return self.delete_all(self.value)
-            # Split and join the subtreaps.
-            left, right = other.split(self.value)
-            self.left = type(self).__set_xor__(self.left, left)
-            self.right = type(self).__set_xor__(self.right, right)
-            # Remove duplicates.
-            return self.delete_all(self.value) if in_both else self.delete_all_except(self.value)
-        # If other has priority, split self.
-        else:
-            # Check for duplicates.
-            in_both = other.value in self
-            # Remove duplicates.
-            self = self.delete_all(other.value)
-            # Nothing to split, done.
-            if not self:
-                return other.delete_all(other.value)
-            # Split and join the subtreaps.
-            left, right = self.split(other.value)
-            other.left = type(self).__set_xor__(left, other.left)
-            other.right = type(self).__set_xor__(right, other.right)
             # Remove duplicates.
             return other.delete_all(other.value) if in_both else other.delete_all_except(other.value)
 
@@ -817,11 +751,11 @@ class Treap(Generic[T]):
 
     def __or__(self: Treap[T], other: Treap[T]) -> Treap[T]:
         """Combines two treaps, in-destructively, keeping unique nodes from both treaps, and returns the new treap."""
-        return type(self)(root=TreapNode.__or__(self.copy().root, other.copy().root))
+        return type(self)(root=TreapNode.__or__(self.copy().root, other.copy().root, isinstance(self, OrderedSet) and isinstance(other, OrderedSet)))
 
     def __ior__(self: Treap[T], other: Treap[T]) -> Treap[T]:
         """Combines two treaps, in-place, without editing the other treap, keeping unique nodes from both treaps, and returns the new treap."""
-        self.root = TreapNode.__or__(self.root, other.copy().root)
+        self.root = TreapNode.__or__(self.root, other.copy().root, isinstance(self, OrderedSet) and isinstance(other, OrderedSet))
         return self
 
     def __and__(self: Treap[T], other: Treap[T]) -> Treap[T]:
@@ -835,11 +769,11 @@ class Treap(Generic[T]):
 
     def __xor__(self: Treap[T], other: Treap[T]) -> Treap[T]:
         """Combines two treaps, in-destructively, keeping only nodes which appears in one treap, and returns the new treap."""
-        return type(self)(root=TreapNode.__xor__(self.copy().root, other.copy().root))
+        return type(self)(root=TreapNode.__xor__(self.copy().root, other.copy().root, isinstance(self, OrderedSet) and isinstance(other, OrderedSet)))
 
     def __ixor__(self: Treap[T], other: Treap[T]) -> Treap[T]:
         """Combines two treaps, in-place, without editing the other treap, keeping only nodes which appears in one treap, and returns the new treap."""
-        self.root = TreapNode.__xor__(self.root, other.copy().root)
+        self.root = TreapNode.__xor__(self.root, other.copy().root, isinstance(self, OrderedSet) and isinstance(other, OrderedSet))
         return self
 
     def issubset(self: Treap[T], other: Treap[T]) -> bool:
@@ -852,7 +786,7 @@ class Treap(Generic[T]):
 
     def isdisjoint(self: Treap[T], other: Treap[T]) -> bool:
         """Returns if self and other share no values."""
-        return not self or not other or self.root.isdisjoint(other.root)
+        return not self or not other or self.root.copy().isdisjoint(other.root)
 
     def unique(self: Treap[T]) -> Treap[T]:
         """Deletes all duplicate occurrences of any value."""
@@ -974,35 +908,11 @@ class OrderedSet(Generic[T], Treap[T]):
 
     def __add__(self: OrderedSet[T], other: OrderedSet[T]) -> OrderedSet[T]:
         """Combines two treaps, in-destructively, keeping unique nodes from both treaps, and returns the new treap."""
-        or_method = TreapNode.__set_or__ if isinstance(other, OrderedSet) else TreapNode.__or__
-        return type(self)(root=or_method(self.copy().root, other.copy().root))
+        return self | other
 
     def __iadd__(self: OrderedSet[T], other: OrderedSet[T]) -> OrderedSet[T]:
         """Combines two treaps, in-place, without editing the other treap, keeping unique nodes from both treaps, and returns the new treap."""
-        or_method = TreapNode.__set_or__ if isinstance(other, OrderedSet) else TreapNode.__or__
-        self.root = or_method(self.root, other.copy().root)
-        return self
-
-    def __or__(self: OrderedSet[T], other: OrderedSet[T]) -> OrderedSet[T]:
-        """Combines two treaps, in-destructively, keeping unique nodes from both treaps, and returns the new treap."""
-        or_method = TreapNode.__set_or__ if isinstance(other, OrderedSet) else TreapNode.__or__
-        return type(self)(root=or_method(self.copy().root, other.copy().root))
-
-    def __ior__(self: OrderedSet[T], other: OrderedSet[T]) -> OrderedSet[T]:
-        """Combines two treaps, in-place, without editing the other treap, keeping unique nodes from both treaps, and returns the new treap."""
-        or_method = TreapNode.__set_or__ if isinstance(other, OrderedSet) else TreapNode.__or__
-        self.root = or_method(self.root, other.copy().root)
-        return self
-
-    def __xor__(self: OrderedSet[T], other: OrderedSet[T]) -> OrderedSet[T]:
-        """Combines two treaps, in-destructively, keeping only nodes which appears in one treap, and returns the new treap."""
-        xor_method = TreapNode.__set_xor__ if isinstance(other, OrderedSet) else TreapNode.__xor__
-        return type(self)(root=xor_method(self.copy().root, other.copy().root))
-
-    def __ixor__(self: OrderedSet[T], other: OrderedSet[T]) -> OrderedSet[T]:
-        """Combines two treaps, in-place, without editing the other treap, keeping only nodes which appears in one treap, and returns the new treap."""
-        xor_method = TreapNode.__set_xor__ if isinstance(other, OrderedSet) else TreapNode.__xor__
-        self.root = xor_method(self.root, other.copy().root)
+        self |= other
         return self
 
     def unique(self: OrderedSet[T]) -> OrderedSet[T]:

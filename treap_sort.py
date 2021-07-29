@@ -104,7 +104,7 @@ class TreapValues(Generic[T]):
 
 class TreapNode(Generic[T]):
     """Treap Node class with recursive reference to all of the subtreaps."""
-    __slots__ = ["value", "priority", "left", "right"]
+    __slots__ = ("value", "priority", "left", "right")
     value: T
     priority: float
     left: Optional[TreapNode[T]]

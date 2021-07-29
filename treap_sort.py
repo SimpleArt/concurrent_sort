@@ -624,11 +624,11 @@ class TreapNode(Generic[T]):
         # Return the root.
         return self
 
-    def max_(self: TreapNode[T]) -> TreapNode[T]:
+    def max(self: TreapNode[T]) -> TreapNode[T]:
         """Returns the maximum node in the treap."""
         return next(reversed(self))
 
-    def min_(self: TreapNode[T]) -> TreapNode[T]:
+    def min(self: TreapNode[T]) -> TreapNode[T]:
         """Returns the minimum node in the treap."""
         return next(iter(self))
 
@@ -718,15 +718,15 @@ class Treap(Generic[T]):
 
     def __contains__(self: Treap[T], value: T) -> bool:
         """Checks if a value is in the treap."""
-        return value in (self.root or ())
+        return value in self.values()
 
     def __iter__(self: Treap[T]) -> Iterator[T]:
         """In-order traversal over the treap values."""
-        return iter(TreapValues(self.root))
+        return iter(self.values())
 
     def __reversed__(self: Treap[T]) -> Iterator[T]:
         """Reversed in-order traversal over the treap."""
-        return reversed(TreapValues(self.root))
+        return reversed(self.values())
 
     def __len__(self: Treap[T]) -> int:
         """Returns the number of nodes in the treap."""
@@ -888,9 +888,9 @@ class Treap(Generic[T]):
             return self.root.search(value)
         raise ValueError(f"{value} not in treap")
 
-    def walk(self: Treap[T], value: T) -> Iterator[TreapNode[T]]:
+    def walk(self: Treap[T], value: T) -> Iterator[T]:
         """Generates all nodes seen while walking towards a value, including the node with that value, except for None."""
-        return self.root.walk(value) if self else iter(())
+        return self.values().walk(value)
 
     def delete(self: Treap[T], value: T) -> None:
         """
@@ -903,17 +903,13 @@ class Treap(Generic[T]):
             self.root = self.root.delete(value)
         raise ValueError(f"{value} not in treap")
 
-    def max_(self: Treap[T]) -> TreapNode[T]:
-        """Returns the maximum node in the treap."""
-        if self:
-            return self.root.max_()
-        raise ValueError("empty treap has no max")
+    def max(self: Treap[T]) -> T:
+        """Returns the maximum value in the treap."""
+        return self.values.max()
 
-    def min_(self: Treap[T]) -> TreapNode[T]:
-        """Returns the minimum node in the treap."""
-        if self:
-            return self.root.min_()
-        raise ValueError("empty treap has no min")
+    def min(self: Treap[T]) -> T:
+        """Returns the minimum value in the treap."""
+        return self.values.min()
 
     def copy(self: Treap[T]) -> Treap[T]:
         """Returns a shallow copy of the entire treap."""
@@ -927,13 +923,13 @@ class Treap(Generic[T]):
         """Generates all values in the treap."""
         return TreapValues(self.root)
 
-    def bfs(self: Treap[T]) -> Iterator[Iterator[TreapNode[T]]]:
+    def bfs(self: Treap[T]) -> Iterator[Iterator[T]]:
         """Generates all nodes in the treap using breadth-first search in a layer-by-layer approach."""
-        return self.root.bfs() if self else iter(())
+        return self.values().bfs()
 
-    def bfs_flatten(self: Treap[T]) -> Iterator[Iterator[TreapNode[T]]]:
+    def bfs_flatten(self: Treap[T]) -> Iterator[T]:
         """Generates all nodes in the treap using breadth-first search together."""
-        return chain.from_iterable(self.root.bfs()) if self else iter(())
+        return self.values().bfs_flatten()
 
 
 class OrderedSet(Generic[T], Treap[T]):

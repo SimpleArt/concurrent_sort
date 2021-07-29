@@ -826,53 +826,69 @@ class Treap(Generic[T]):
         self.root = self.root and self.root.unique()
         return self
 
-    def extend(self: Treap[T], other: Treap[T]) -> Treap[T]:
+    def extend(self: Treap[T], *others: Treap[T]) -> Treap[T]:
         """
-        Combines two treaps, in-destructively, keeping all nodes from both treaps, and returns the new treap.
+        Combines multiple treaps, keeping all nodes from all treaps, saves to self, and returns self.
 
-        Equivalent to self + other.
+        Equivalent to self += other; return self.
         """
-        return self + other
+        for other in others:
+            self += other
+        return self
 
-    def difference(self: Treap[T], other: Treap[T]) -> Treap[T]:
+    def difference(self: Treap[T], *others: Treap[T]) -> Treap[T]:
         """
-        Returns a new treap using values from self but not from other.
+        Keeps values in self that are not in the others and returns self.
 
-        Equivalent to self - other.
+        Equivalent to self -= other; return self.
         """
-        return self - other
+        for other in others:
+            self -= other
+        return self
 
-    def set_difference(self: Treap[T], other: Treap[T]) -> Treap[T]:
+    def set_difference(self: Treap[T], *others: Treap[T]) -> Treap[T]:
         """
-        Returns a new treap using unique values from self but not from other.
+        Keeps unique values in self that are not in the others and returns self.
 
-        Equivalent to self.unique() - other.
+        Equivalent to self.unique() -= other; return self.
         """
-        return self.unique() - other
+        self.unique()
+        for other in others:
+            self -= other
+        return self
 
-    def union(self: Treap[T], other: Treap[T]) -> Treap[T]:
+    def union(self: Treap[T], *others: Treap[T]) -> Treap[T]:
         """
-        Combines two treaps, in-destructively, keeping unique nodes from both treaps, and returns the new treap.
+        Keeps unique values that are from either self or the others and returns self.
 
-        Equivalent to self | other.
+        Equivalent to self |= other; return self.
         """
-        return self | other
+        self.unique()
+        for other in others:
+            self |= other
+        return self
 
-    def intersection(self: Treap[T], other: Treap[T]) -> Treap[T]:
+    def intersection(self: Treap[T], *others: Treap[T]) -> Treap[T]:
         """
-        Combines two treaps, in-destructively, keeping only nodes which appears in both treaps, and returns the new treap.
+        Keeps unique values that are in both self and every other and returns self.
 
-        Equivalent to self & other.
+        Equivalent to self &= other; return self.
         """
-        return self & other
+        self.unique()
+        for other in others:
+            self &= other
+        return self
 
-    def symmetric_difference(self: Treap[T], other: Treap[T]) -> Treap[T]:
+    def symmetric_difference(self: Treap[T], *others: Treap[T]) -> Treap[T]:
         """
-        Combines two treaps, in-destructively, keeping only nodes which appears in one treap, and returns the new treap.
+        Keeps unique values that are in an odd amount of self and others.
 
-        Equivalent to self ^ other.
+        Equivalent to self ^= other; return self.
         """
-        return self ^ other
+        self.unique()
+        for other in others:
+            self ^= other
+        return self
 
     def height(self: Treap[T]) -> int:
         """Returns the height of the treap."""
@@ -968,21 +984,21 @@ class OrderedSet(Generic[T], Treap[T]):
         """Add a value into the treap if its not already in the treap. Equivalent to self.add()."""
         self.root = self.root.add(value, *args, **kwargs) if self else TreapNode(value, *args, **kwargs)
 
-    def extend(self: OrderedSet[T], other: OrderedSet[T]) -> OrderedSet[T]:
+    def extend(self: OrderedSet[T], *others: OrderedSet[T]) -> OrderedSet[T]:
         """
-        Combines two treaps, in-destructively, keeping unique nodes from both treaps, and returns the new treap.
+        Keeps unique values that are from either self or the others and returns self.
 
-        Equivalent to self | other.
+        Equivalent to self.union(*others).
         """
-        return self | other
+        return self.union(*others)
 
-    def set_difference(self: Treap[T], other: Treap[T]) -> Treap[T]:
+    def set_difference(self: OrderedSet[T], *others: OrderedSet[T]) -> OrderedSet[T]:
         """
-        Returns a new treap using unique values from self but not from other.
+        Keeps unique values in self that are not in the others and returns self.
 
-        Equivalent to self - other.
+        Equivalent to self.difference(*others).
         """
-        return self - other
+        return self.difference(*others)
 
 
 def treap_sort(iterable: Iterable[T], /, *, key: Callable[[T], Comparable] = None, reverse: bool = False) -> Iterator[T]:

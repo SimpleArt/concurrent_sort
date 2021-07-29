@@ -842,6 +842,14 @@ class Treap(Generic[T]):
         """
         return self - other
 
+    def set_difference(self: Treap[T], other: Treap[T]) -> Treap[T]:
+        """
+        Returns a new treap using unique values from self but not from other.
+
+        Equivalent to self.unique() - other.
+        """
+        return self.unique() - other
+
     def union(self: Treap[T], other: Treap[T]) -> Treap[T]:
         """
         Combines two treaps, in-destructively, keeping unique nodes from both treaps, and returns the new treap.
@@ -949,7 +957,7 @@ class OrderedSet(Generic[T], Treap[T]):
         return self
 
     def insert(self: OrderedSet[T], value: T, *args, **kwargs) -> None:
-        """Add a value into the treap if its not already in the treap. Equivalent to self.add(...)."""
+        """Add a value into the treap if its not already in the treap. Equivalent to self.add()."""
         self.root = self.root.add(value, *args, **kwargs) if self else TreapNode(value, *args, **kwargs)
 
     def extend(self: OrderedSet[T], other: OrderedSet[T]) -> OrderedSet[T]:
@@ -959,6 +967,14 @@ class OrderedSet(Generic[T], Treap[T]):
         Equivalent to self | other.
         """
         return self | other
+
+    def set_difference(self: Treap[T], other: Treap[T]) -> Treap[T]:
+        """
+        Returns a new treap using unique values from self but not from other.
+
+        Equivalent to self - other.
+        """
+        return self - other
 
 
 def treap_sort(iterable: Iterable[T], /, *, key: Callable[[T], Comparable] = None, reverse: bool = False) -> Iterator[T]:

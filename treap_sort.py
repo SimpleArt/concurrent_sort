@@ -943,6 +943,14 @@ class Treap(Generic[T]):
 class OrderedSet(Generic[T], Treap[T]):
     """Implementation of an ordered set using the treap data structure."""
 
+    def __lt__(self: OrderedSet[T], other: OrderedSet[T]) -> bool:
+        """Returns if self is contained by other but has different unique elements."""
+        return self != other and self <= other
+
+    def __gt__(self: OrderedSet[T], other: OrderedSet[T]) -> bool:
+        """Returns if self contains other but has different unique elements."""
+        return self != other and self >= other
+
     def __add__(self: OrderedSet[T], other: OrderedSet[T]) -> OrderedSet[T]:
         """Combines two treaps, in-destructively, keeping unique nodes from both treaps, and returns the new treap."""
         return self | other

@@ -55,11 +55,11 @@ class TreapValues(Generic[T]):
 
     def __iter__(self: TreapValues[T]) -> Iterator[T]:
         """In-order traversal over the values."""
-        return self.to_values((self.root or ())))
+        return self.to_values((self.root or ()))
 
     def __reversed__(self: TreapValues[T]) -> Iterator[T]:
         """Reversed in-order traversal over the values."""
-        return self.to_values(reversed(self.root or ())))
+        return self.to_values(reversed(self.root or ()))
 
     def __len__(self: TreapValues[T]) -> int:
         """Returns the number of values in the treap."""
@@ -913,11 +913,11 @@ class Treap(Generic[T]):
 
     def max(self: Treap[T]) -> T:
         """Returns the maximum value in the treap."""
-        return self.values.max()
+        return self.values().max()
 
     def min(self: Treap[T]) -> T:
         """Returns the minimum value in the treap."""
-        return self.values.min()
+        return self.values().min()
 
     def copy(self: Treap[T]) -> Treap[T]:
         """Returns a shallow copy of the entire treap."""

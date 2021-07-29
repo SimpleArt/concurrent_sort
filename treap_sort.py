@@ -45,20 +45,36 @@ class TreapValues(Generic[T]):
         """Store the root being viewed into."""
         self.root = root
 
+    def __bool__(self: TreapValues[T]) -> bool:
+        """Returns if the treap has any nodes."""
+        return bool(self.root)
+
+    def __contains__(self: TreapValues[T], value: T) -> bool:
+        """Checks if a value is in the treap."""
+        return value in (self.root or ())
+
     def __iter__(self: TreapValues[T]) -> Iterator[T]:
         """In-order traversal over the values."""
-        return (node.value for node in (self.root or ()))
+        return self.to_values((self.root or ())))
 
     def __reversed__(self: TreapValues[T]) -> Iterator[T]:
         """Reversed in-order traversal over the values."""
-        return (node.value for node in reversed(self.root or ()))
+        return self.to_values(reversed(self.root or ())))
+
+    def __len__(self: TreapValues[T]) -> int:
+        """Returns the number of values in the treap."""
+        return len(self.root or ())
+
+    def __repr__(self: TreapValues[T]) -> str:
+        """String format of the treap values as the constructor."""
+        return f"Treap({list(self)}).values()"
 
     def bfs(self: TreapValues[T]) -> Iterator[Iterator[T]]:
         """Generates all values in the treap using breadth-first search in a layer-by-layer approach."""
-        if not self.root:
+        if not self:
             return
         for layer in self.root.bfs():
-            yield (node.value for node in layer)
+            yield self.to_values(layer)
 
     def bfs_flatten(self: TreapValues[T]) -> Iterator[T]:
         """Generates all values in the treap using breadth-first search together."""
@@ -66,7 +82,24 @@ class TreapValues(Generic[T]):
 
     def walk(self: TreapValues[T], value: T) -> Iterator[T]:
         """Generates all values seen while walking towards a value, including the value if it is found, but not None."""
-        return (node.value for node in self.root.walk(value)) if self.root else iter(())
+        return self.to_values(self.root.walk(value)) if self else iter(())
+
+    def max(self: TreapValues[T]) -> T:
+        """Returns the maximum value in the treap."""
+        if self:
+            return self.root.max().value
+        raise ValueError("empty treap has no max")
+
+    def min(self: TreapValues[T]) -> T:
+        """Returns the minimum value in the treap."""
+        if self:
+            return self.root.min().value
+        raise ValueError("empty treap has no min")
+
+    @staticmethod
+    def to_values(iterable: Iterable[TreapNode[T]]) -> Iterator[T]:
+        """Converts an iterable of TreapNodes to values."""
+        return (node.value for node in iterable)
 
 
 class TreapNode(Generic[T]):
